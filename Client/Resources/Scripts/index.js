@@ -510,6 +510,7 @@ async function handleSendEmail(e) {
     }
 
     try {
+        console.log('Sending email request:', request);
         const response = await fetch(`${API_BASE}/email/send`, {
             method: 'POST',
             headers: {
@@ -519,7 +520,19 @@ async function handleSendEmail(e) {
             body: JSON.stringify(request)
         });
 
-        const data = await response.json();
+        let data;
+        try {
+            data = await response.json();
+        } catch (jsonError) {
+            const text = await response.text();
+            console.error('Failed to parse response as JSON:', text);
+            messageDiv.className = 'alert alert-danger';
+            messageDiv.textContent = `Server error: ${text || response.statusText}`;
+            messageDiv.style.display = 'block';
+            return;
+        }
+        
+        console.log('Response:', response.status, data);
 
         if (response.ok) {
             messageDiv.className = 'alert alert-success';
@@ -528,7 +541,12 @@ async function handleSendEmail(e) {
             document.getElementById('emailForm').reset();
         } else {
             messageDiv.className = 'alert alert-danger';
-            messageDiv.textContent = data.message || 'Failed to send email';
+            let errorMsg = data.message || 'Failed to send email';
+            if (data.errors) {
+                errorMsg += ': ' + JSON.stringify(data.errors);
+            }
+            console.error('Email send error:', errorMsg, data);
+            messageDiv.textContent = errorMsg;
             messageDiv.style.display = 'block';
         }
     } catch (error) {

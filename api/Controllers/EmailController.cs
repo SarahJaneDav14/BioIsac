@@ -32,6 +32,16 @@ public class EmailController : ControllerBase
     {
         if (!IsAuthenticated()) return Unauthorized();
 
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(new { message = "Invalid request", errors = ModelState });
+        }
+
+        if (request == null)
+        {
+            return BadRequest(new { message = "Request body is required" });
+        }
+
         if (string.IsNullOrWhiteSpace(request.Subject) || string.IsNullOrWhiteSpace(request.Body))
         {
             return BadRequest(new { message = "Subject and Body are required" });

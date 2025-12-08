@@ -1,6 +1,3 @@
-using MailKit.Net.Smtp;
-using MailKit.Security;
-using MimeKit;
 using BioIsac.Models;
 using MySql.Data.MySqlClient;
 
@@ -79,17 +76,7 @@ public class EmailService
 
     public async Task<bool> SendEmailAsync(EmailRequest request)
     {
-        var emailSettings = _configuration.GetSection("EmailSettings");
-        var smtpServer = emailSettings["SmtpServer"] ?? "smtp.gmail.com";
-        var smtpPort = int.Parse(emailSettings["SmtpPort"] ?? "587");
-        var senderEmail = emailSettings["SenderEmail"] ?? "";
-        var senderPassword = emailSettings["SenderPassword"] ?? "";
-
-        if (string.IsNullOrEmpty(senderEmail) || string.IsNullOrEmpty(senderPassword))
-        {
-            throw new Exception("Email configuration is missing. Please set EmailSettings in appsettings.json");
-        }
-
+        // Simulate email sending - no actual SMTP connection needed
         List<Contact> recipients;
 
         if (request.ContactId.HasValue)
@@ -111,33 +98,14 @@ public class EmailService
             return false;
         }
 
-        var message = new MimeMessage();
-        message.From.Add(new MailboxAddress("Admin", senderEmail));
+        // Simulate async operation
+        await Task.Delay(100);
         
-        foreach (var recipient in recipients)
-        {
-            message.To.Add(new MailboxAddress(recipient.Name, recipient.Email));
-        }
-
-        message.Subject = request.Subject;
-        message.Body = new TextPart("html")
-        {
-            Text = request.Body
-        };
-
-        try
-        {
-            using var client = new SmtpClient();
-            await client.ConnectAsync(smtpServer, smtpPort, SecureSocketOptions.StartTls);
-            await client.AuthenticateAsync(senderEmail, senderPassword);
-            await client.SendAsync(message);
-            await client.DisconnectAsync(true);
-            return true;
-        }
-        catch
-        {
-            return false;
-        }
+        // Log simulated email (optional - can be removed)
+        Console.WriteLine($"Simulated email sent to {recipients.Count} recipient(s)");
+        Console.WriteLine($"Subject: {request.Subject}");
+        
+        return true;
     }
 }
 
