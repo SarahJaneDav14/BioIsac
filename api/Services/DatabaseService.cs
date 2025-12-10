@@ -9,8 +9,21 @@ public class DatabaseService
 
     public DatabaseService(IConfiguration configuration)
     {
-        _connectionString = configuration.GetConnectionString("DefaultConnection") 
-            ?? "Server=localhost;Database=bioisac;User Id=root;Password=;Port=3306;";
+        // Priority: Environment variable (Heroku) > appsettings.json (local dev)
+        var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL") 
+            ?? configuration["DATABASE_URL"];
+        
+        if (string.IsNullOrWhiteSpace(databaseUrl))
+        {
+            throw new InvalidOperationException(
+                "DATABASE_URL is not set. " +
+                "Please set it in appsettings.json for local development or as an environment variable in your deployment environment."
+            );
+        }
+
+        // Parse DATABASE_URL into MySQL connection string
+        _connectionString = DatabaseConnectionHelper.ParseDatabaseUrl(databaseUrl);
+        
         InitializeDatabase();
     }
 

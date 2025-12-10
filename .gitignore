@@ -11,6 +11,8 @@ obj/
 
 # Configuration
 appsettings.Development.json
+.env
+api/.env
 
 # Logs
 *.log

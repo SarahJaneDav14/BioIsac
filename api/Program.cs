@@ -34,6 +34,7 @@ else
 app.UseHttpsRedirection();
 }
 
+
 app.UseAuthorization();
 app.UseCors("OpenPolicy");
 
