@@ -29,8 +29,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
+else
+{
 app.UseHttpsRedirection();
+}
 
 app.UseAuthorization();
 app.UseCors("OpenPolicy");

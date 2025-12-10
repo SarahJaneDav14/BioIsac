@@ -1,0 +1,25 @@
+# .NET build artifacts
+bin/
+obj/
+*.dll
+*.exe
+*.pdb
+
+# User-specific files
+*.user
+*.suo
+
+# Configuration
+appsettings.Development.json
+
+# Logs
+*.log
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Node modules if frontend exists in repo
+node_modules/
+"bin/" 
+"obj/" 
