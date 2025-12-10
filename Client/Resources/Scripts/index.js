@@ -17,6 +17,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
 async function verifyToken() {
     try {
+        authToken = localStorage.getItem('authToken');
+        if (!authToken) {
+            showLogin();
+            return;
+        }
         const response = await fetch(`${API_BASE}/auth/verify`, {
             headers: { 'Authorization': `Bearer ${authToken}` }
         });
@@ -121,16 +126,26 @@ async function showDashboard() {
     currentView = 'dashboard';
     await loadContacts();
     await loadCategories();
-    renderDashboard();
+    await renderDashboard();
 }
 
 async function loadContacts() {
     try {
+        authToken = localStorage.getItem('authToken');
+        if (!authToken) {
+            console.error('No auth token found');
+            return;
+        }
         const response = await fetch(`${API_BASE}/contacts`, {
             headers: { 'Authorization': `Bearer ${authToken}` }
         });
         if (response.ok) {
             contacts = await response.json();
+        } else if (response.status === 401) {
+            console.error('Unauthorized - token may have expired');
+            localStorage.removeItem('authToken');
+            authToken = null;
+            showLogin();
         }
     } catch (error) {
         console.error('Failed to load contacts:', error);
@@ -139,18 +154,31 @@ async function loadContacts() {
 
 async function loadCategories() {
     try {
+        authToken = localStorage.getItem('authToken');
+        if (!authToken) {
+            console.error('No auth token found');
+            return;
+        }
         const response = await fetch(`${API_BASE}/contacts/categories`, {
             headers: { 'Authorization': `Bearer ${authToken}` }
         });
         if (response.ok) {
             categories = await response.json();
+            console.log('Categories loaded:', categories);
+        } else if (response.status === 401) {
+            console.error('Unauthorized - token may have expired');
+            localStorage.removeItem('authToken');
+            authToken = null;
+            showLogin();
+        } else {
+            console.error('Failed to load categories:', response.status, response.statusText);
         }
     } catch (error) {
         console.error('Failed to load categories:', error);
     }
 }
 
-function renderDashboard() {
+async function renderDashboard() {
     const app = document.getElementById('app');
     app.innerHTML = `
         <nav class="navbar navbar-dark">
@@ -171,10 +199,10 @@ function renderDashboard() {
             <div id="tabContent"></div>
         </div>
     `;
-    showTab('contacts');
+    await showTab('contacts');
 }
 
-function showTab(tab) {
+async function showTab(tab) {
     const tabContent = document.getElementById('tabContent');
     if (tab === 'contacts') {
         tabContent.innerHTML = `
@@ -219,7 +247,9 @@ function showTab(tab) {
                 </div>
             </div>
         `;
-        updateRecipientOptions();
+        await loadCategories();
+        await loadContacts();
+        await updateRecipientOptions();
     }
 }
 
@@ -319,6 +349,11 @@ async function saveContact() {
     const workField = document.getElementById('contactWorkField').value;
 
     try {
+        authToken = localStorage.getItem('authToken');
+        if (!authToken) {
+            showLogin();
+            return;
+        }
         const response = await fetch(`${API_BASE}/contacts`, {
             method: 'POST',
             headers: {
@@ -336,6 +371,7 @@ async function saveContact() {
             messageDiv.textContent = 'Contact added successfully';
             messageDiv.style.display = 'block';
             await loadContacts();
+            await loadCategories();
             setTimeout(() => {
                 bootstrap.Modal.getInstance(document.querySelector('.modal')).hide();
                 renderContactsList();
@@ -403,6 +439,11 @@ async function updateContact(id) {
     const workField = document.getElementById('editContactWorkField').value;
 
     try {
+        authToken = localStorage.getItem('authToken');
+        if (!authToken) {
+            showLogin();
+            return;
+        }
         const response = await fetch(`${API_BASE}/contacts/${id}`, {
             method: 'PUT',
             headers: {
@@ -420,6 +461,7 @@ async function updateContact(id) {
             messageDiv.textContent = 'Contact updated successfully';
             messageDiv.style.display = 'block';
             await loadContacts();
+            await loadCategories();
             setTimeout(() => {
                 bootstrap.Modal.getInstance(document.querySelector('.modal')).hide();
                 renderContactsList();
@@ -441,6 +483,11 @@ async function deleteContact(id) {
     if (!confirm('Are you sure you want to delete this contact?')) return;
 
     try {
+        authToken = localStorage.getItem('authToken');
+        if (!authToken) {
+            showLogin();
+            return;
+        }
         const response = await fetch(`${API_BASE}/contacts/${id}`, {
             method: 'DELETE',
             headers: { 'Authorization': `Bearer ${authToken}` }
@@ -448,6 +495,7 @@ async function deleteContact(id) {
 
         if (response.ok) {
             await loadContacts();
+            await loadCategories();
             renderContactsList();
         } else {
             alert('Failed to delete contact');
@@ -457,11 +505,16 @@ async function deleteContact(id) {
     }
 }
 
-function updateRecipientOptions() {
-    const type = document.getElementById('emailRecipientType').value;
+async function updateRecipientOptions() {
+    const type = document.getElementById('emailRecipientType')?.value;
     const optionsDiv = document.getElementById('recipientOptions');
+    
+    if (!type || !optionsDiv) return;
 
     if (type === 'category') {
+        // Reload categories to ensure we have the latest data
+        await loadCategories();
+        
         optionsDiv.innerHTML = `
             <label class="form-label">Select Work Field</label>
             <select class="form-select" id="emailCategory" required>
@@ -470,6 +523,9 @@ function updateRecipientOptions() {
             </select>
         `;
     } else {
+        // Reload contacts to ensure we have the latest data
+        await loadContacts();
+        
         optionsDiv.innerHTML = `
             <label class="form-label">Select Person</label>
             <select class="form-select" id="emailPerson" required>
@@ -510,6 +566,14 @@ async function handleSendEmail(e) {
     }
 
     try {
+        authToken = localStorage.getItem('authToken');
+        if (!authToken) {
+            messageDiv.className = 'alert alert-danger';
+            messageDiv.textContent = 'Not authenticated. Please log in again.';
+            messageDiv.style.display = 'block';
+            showLogin();
+            return;
+        }
         console.log('Sending email request:', request);
         const response = await fetch(`${API_BASE}/email/send`, {
             method: 'POST',
