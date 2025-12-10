@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("BioIsac")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+bf0b2c3152a590464993ef3d15705e826faf309d")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+52d1fe805bca91e07b7159f444ff00dce7405c88")]
 [assembly: System.Reflection.AssemblyProductAttribute("BioIsac")]
 [assembly: System.Reflection.AssemblyTitleAttribute("BioIsac")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
