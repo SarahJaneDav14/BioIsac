@@ -316,17 +316,49 @@ select.form-select {
     border-radius: 6px;
     border: 1px solid rgba(255, 255, 255, 0.1);
     padding: 12px 15px;
+    padding-right: 2.5rem;
     transition: all 0.3s ease;
-    background: linear-gradient(135deg, #252525 0%, #1e1e1e 100%);
+    background: linear-gradient(135deg, #252525 0%, #1e1e1e 100%) !important;
+    background-color: #252525 !important;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e") !important;
+    background-repeat: no-repeat !important;
+    background-position: right 0.75rem center !important;
+    background-size: 16px 12px !important;
     color: #ffffff !important;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
 }
 
 select.form-select:focus {
     border-color: rgba(0, 208, 132, 0.5);
     box-shadow: 0 0 0 3px rgba(0, 208, 132, 0.15), 0 4px 16px rgba(0, 208, 132, 0.2);
     outline: none;
-    background: linear-gradient(135deg, #2a2a2a 0%, #252525 100%);
+    background: linear-gradient(135deg, #2a2a2a 0%, #252525 100%) !important;
+    background-color: #2a2a2a !important;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e") !important;
+    background-repeat: no-repeat !important;
+    background-position: right 0.75rem center !important;
+    background-size: 16px 12px !important;
     color: #ffffff !important;
+}
+
+select.form-select option {
+    background: #2a2a2a !important;
+    color: #ffffff !important;
+    padding: 10px;
+}
+
+select.form-select option:hover,
+select.form-select option:checked,
+select.form-select option:focus {
+    background: rgba(0, 208, 132, 0.3) !important;
+    color: #ffffff !important;
+}
+
+/* For browsers that support it, style the dropdown list */
+select.form-select::-ms-expand {
+    color: #ffffff;
 }
 
 textarea.form-control {

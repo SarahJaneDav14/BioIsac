@@ -1,5 +1,12 @@
 # BioIsac Admin Portal
 
+### Default Login Credentials
+
+- **Username**: `admin`
+- **Password**: `admin123`
+
+the connection string: mysql://gl3iw5ydyeso8wcd:otv83may8216ayf4@e764qqay0xlsc4cz.cbetxkdyhwsb.us-east-1.rds.amazonaws.com:3306/p2e6v4jvnf227r41
+
 A simple admin-only website for managing contacts and sending emails.
 
 ## Features
